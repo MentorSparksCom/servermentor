@@ -1,0 +1,72 @@
+{{ template "admin_head" . }}
+<div class="page-header">
+    <div>
+        <h2>{{ .Server.Name }} Services</h2>
+        <p class="text-muted">Kubernetes services discovered for this server.</p>
+    </div>
+</div>
+
+{{ template "server_tabs" . }}
+
+<div class="card">
+    <h3 class="card-title"><i class="fa-solid fa-gears"></i> Services</h3>
+
+    <form action="/admin/servers/{{ .Server.ID }}/services" method="GET">
+        <div class="filter-grid">
+            <div class="form-group">
+                <label for="filter-service-name">Service Name</label>
+                <input id="filter-service-name" type="text" name="service" value="{{ .ServiceFilter }}" placeholder="service name" />
+            </div>
+            <div class="form-group">
+                <label for="filter-service-namespace">Namespace</label>
+                <input id="filter-service-namespace" type="text" name="namespace" value="{{ .NamespaceFilter }}" placeholder="namespace" />
+            </div>
+            <div class="form-group">
+                <label for="filter-service-type">Type</label>
+                <input id="filter-service-type" type="text" name="type" value="{{ .TypeFilter }}" placeholder="ClusterIP / NodePort" />
+            </div>
+            <div class="form-group">
+                <label for="filter-service-deployment">Deployment</label>
+                <input id="filter-service-deployment" type="text" name="deployment" value="{{ .DeploymentFilter }}" placeholder="deployment name" />
+            </div>
+        </div>
+        <div class="filter-actions">
+            <button type="submit" class="button button-accent button-small"><i class="fa-solid fa-filter"></i> Apply Filters</button>
+            <a href="/admin/servers/{{ .Server.ID }}/services" class="button button-secondary button-small"><i class="fa-solid fa-rotate-left"></i> Clear</a>
+        </div>
+    </form>
+
+    {{ if .Server.Services }}
+    <div class="table-responsive">
+        <table>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Namespace</th>
+                    <th>Type</th>
+                    <th>Deployment Name(s)</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{ range .Server.Services }}
+                <tr>
+                    <td>{{ .Name }}</td>
+                    <td>{{ .Namespace }}</td>
+                    <td><span class="badge">{{ .Type }}</span></td>
+                    <td>
+                        {{ if .Deployments }}
+                        {{ range $idx, $dep := .Deployments }}{{ if gt $idx 0 }}, {{ end }}<a href="/admin/servers/{{ $.Server.ID }}/deployments?deployment={{ $dep.Name | urlquery }}&namespace={{ $dep.Namespace | urlquery }}"><code>{{ $dep.Name }}</code></a>{{ end }}
+                        {{ else }}
+                        <span class="text-muted">-</span>
+                        {{ end }}
+                    </td>
+                </tr>
+                {{ end }}
+            </tbody>
+        </table>
+    </div>
+    {{ else }}
+    <p class="text-muted">No services synced yet. Run Sync K8s from the servers list.</p>
+    {{ end }}
+</div>
+{{ template "admin_foot" . }}

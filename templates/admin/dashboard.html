@@ -1,0 +1,74 @@
+{{ template "admin_head" . }}
+<div class="dashboard-page">
+    <div class="dashboard-welcome">
+        <h2>Infrastructure Overview</h2>
+        <p class="text-muted">Track servers, Kubernetes services, deployments, and routes in one place.</p>
+    </div>
+
+    <div class="launcher-grid">
+        <a href="/admin/servers" class="launcher-card">
+            <div class="launcher-card-icon">
+                <i class="fa-solid fa-server"></i>
+            </div>
+            <h3>Servers</h3>
+            <p>{{ .ServerCount }} registered</p>
+        </a>
+
+        <a href="/admin/services" class="launcher-card">
+            <div class="launcher-card-icon">
+                <i class="fa-solid fa-gears"></i>
+            </div>
+            <h3>Services</h3>
+            <p>{{ .ServiceCount }} discovered</p>
+        </a>
+
+        <a href="/admin/routes" class="launcher-card">
+            <div class="launcher-card-icon">
+                <i class="fa-solid fa-route"></i>
+            </div>
+            <h3>Routes</h3>
+            <p>{{ .RouteCount }} discovered</p>
+        </a>
+
+        <a href="/admin/servers" class="launcher-card">
+            <div class="launcher-card-icon">
+                <i class="fa-solid fa-cloud"></i>
+            </div>
+            <h3>Sync</h3>
+            <p>Kubernetes + DNS</p>
+        </a>
+    </div>
+
+    <section class="card">
+        <h3 class="card-title"><i class="fa-solid fa-clock-rotate-left"></i> Recent Servers</h3>
+        <div class="table-responsive">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Provider</th>
+                        <th>IP</th>
+                        <th>Services</th>
+                        <th>Routes</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{ range .Servers }}
+                    <tr>
+                        <td>{{ .Name }}</td>
+                        <td>{{ .Provider }}</td>
+                        <td class="ip-cell"><code class="ip-code">{{ .IP }}</code></td>
+                        <td>{{ len .Services }}</td>
+                        <td>{{ len .Routes }}</td>
+                    </tr>
+                    {{ else }}
+                    <tr>
+                        <td colspan="5" class="text-muted">No servers yet. Go to Servers and add your first one.</td>
+                    </tr>
+                    {{ end }}
+                </tbody>
+            </table>
+        </div>
+    </section>
+</div>
+{{ template "admin_foot" . }}

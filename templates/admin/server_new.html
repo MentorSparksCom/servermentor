@@ -1,0 +1,54 @@
+{{ template "admin_head" . }}
+<div class="page-header">
+    <div>
+        <h2>New Server</h2>
+        <p class="text-muted">Add infrastructure node details and cluster credentials.</p>
+    </div>
+    <a href="/admin/servers" class="button button-secondary">
+        <i class="fa-solid fa-arrow-left"></i> Back to Servers
+    </a>
+</div>
+
+<div class="card">
+    <h3 class="card-title"><i class="fa-solid fa-plus"></i> Server Configuration</h3>
+    <form action="/admin/servers" method="POST">
+        <div class="form-grid-2">
+            <div class="form-group">
+                <label for="name">Server Name</label>
+                <input type="text" id="name" name="name" placeholder="prod-eu-1" required>
+            </div>
+            <div class="form-group">
+                <label for="provider">Provider</label>
+                <input type="text" id="provider" name="provider" placeholder="Hetzner, AWS, Azure">
+            </div>
+        </div>
+
+        <div class="form-grid-2">
+            <div class="form-group">
+                <label for="ip">IP Address</label>
+                <input type="text" id="ip" name="ip" placeholder="10.0.0.10">
+            </div>
+            <div class="form-group">
+                <label for="overlayIp">Overlay IP</label>
+                <input type="text" id="overlayIp" name="overlayIp" placeholder="100.64.0.10">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="tags">Tags</label>
+            <input type="text" id="tags" name="tags" placeholder="prod,eu,critical">
+        </div>
+
+        <div class="form-group">
+            <label for="kubeConfig">Cluster Login YAML (kubeconfig)</label>
+            <textarea id="kubeConfig" name="kubeConfig" rows="10" placeholder="Paste kubeconfig yaml here"></textarea>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="button button-accent">
+                <i class="fa-solid fa-floppy-disk"></i> Create Server
+            </button>
+        </div>
+    </form>
+</div>
+{{ template "admin_foot" . }}

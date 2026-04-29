@@ -1,0 +1,91 @@
+# $env:OAUTH2_PROXY_CLIENT_ID="github-client-id"
+# $env:OAUTH2_PROXY_CLIENT_SECRET="github-client-secret"
+# $env:OAUTH2_PROXY_COOKIE_SECRET="11111111112222222222333333333344"
+# $env:AUTH_SESSION_SECRET="a-long-random-secret"
+# $env:AUTH_ADMIN_EMAILS="email@example.com"
+
+# docker compose -f examples/docker-compose.oauth2-proxy.yml up
+
+
+name: servermentor-oauth2-proxy
+
+services:
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: servicetracker
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d servicetracker"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - app-net
+
+  servermentor:
+    image: golang:1.25-bookworm
+    working_dir: /workspace
+    command: sh -c "go mod download && go run ."
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DB_HOST: postgres
+      DB_PORT: "5432"
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      DB_NAME: servicetracker
+      PORT: "8080"
+      AUTH_MODE: proxy
+      AUTH_SESSION_SECRET: ${AUTH_SESSION_SECRET:-replace-me-with-a-long-random-secret}
+      AUTH_ADMIN_EMAILS: ${AUTH_ADMIN_EMAILS:-admin@example.com}
+      AUTH_PROXY_TRUSTED_PROXIES: 172.30.0.0/24
+      AUTH_PROXY_SUBJECT_HEADERS: X-Forwarded-User
+      AUTH_PROXY_EMAIL_HEADERS: X-Forwarded-Email
+      AUTH_PROXY_NAME_HEADERS: X-Forwarded-Preferred-Username
+      AUTH_PROXY_GROUPS_HEADERS: X-Forwarded-Groups
+    volumes:
+      - ..:/workspace
+      - go-mod-cache:/go/pkg/mod
+      - go-build-cache:/root/.cache/go-build
+    networks:
+      - app-net
+
+  oauth2-proxy:
+    image: quay.io/oauth2-proxy/oauth2-proxy:v7.8.1
+    depends_on:
+      - servermentor
+    ports:
+      - "4180:4180"
+    command:
+      - --provider=github
+      - --http-address=0.0.0.0:4180
+      - --redirect-url=http://localhost:4180/oauth2/callback
+      - --upstream=http://servermentor:8080
+      - --reverse-proxy=true
+      - --pass-user-headers=true
+      - --pass-authorization-header=false
+      - --set-xauthrequest=true
+      - --email-domain=*
+      - --scope=read:user user:email read:org
+      - --cookie-secure=false
+      - --cookie-secret=${OAUTH2_PROXY_COOKIE_SECRET:?set OAUTH2_PROXY_COOKIE_SECRET to a 32-byte base64 value}
+      - --client-id=${OAUTH2_PROXY_CLIENT_ID:?set OAUTH2_PROXY_CLIENT_ID}
+      - --client-secret=${OAUTH2_PROXY_CLIENT_SECRET:?set OAUTH2_PROXY_CLIENT_SECRET}
+    networks:
+      - app-net
+
+networks:
+  app-net:
+    ipam:
+      config:
+        - subnet: 172.30.0.0/24
+
+volumes:
+  postgres-data:
+  go-mod-cache:
+  go-build-cache:

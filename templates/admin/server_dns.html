@@ -1,0 +1,26 @@
+{{ template "admin_head" . }}
+<div class="page-header">
+    <div>
+        <h2>{{ .Server.Name }} DNS</h2>
+        <p class="text-muted">Known DNS names from the routes stored for this server.</p>
+    </div>
+</div>
+
+{{ template "server_tabs" . }}
+
+<div class="card">
+    <h3 class="card-title"><i class="fa-solid fa-globe"></i> Route DNS Names</h3>
+    <p class="text-muted">These names come from synced route data, not a live external DNS provider lookup.</p>
+    <p class="text-muted">Server IP reference: <code>{{ .Server.IP }}</code></p>
+
+    {{ if .DNSNames }}
+    <ul>
+        {{ range .DNSNames }}
+        <li><code>{{ . }}</code></li>
+        {{ end }}
+    </ul>
+    {{ else }}
+    <p class="text-muted">No route DNS names are stored for this server yet.</p>
+    {{ end }}
+</div>
+{{ template "admin_foot" . }}

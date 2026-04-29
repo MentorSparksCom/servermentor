@@ -1,0 +1,79 @@
+{{ template "admin_head" . }}
+<div class="page-header">
+    <div>
+        <h2>{{ .Server.Name }} Routes</h2>
+        <p class="text-muted">Ingress and HTTPRoute style endpoints with DNS names.</p>
+    </div>
+</div>
+
+{{ template "server_tabs" . }}
+
+<div class="card">
+    <h3 class="card-title"><i class="fa-solid fa-route"></i> Routes</h3>
+
+    <form action="/admin/servers/{{ .Server.ID }}/routes" method="GET">
+        <div class="filter-grid">
+            <div class="form-group">
+                <label for="filter-route-name">Route Name</label>
+                <input id="filter-route-name" type="text" name="name" value="{{ .NameFilter }}" placeholder="route name" />
+            </div>
+            <div class="form-group">
+                <label for="filter-route-namespace">Namespace</label>
+                <input id="filter-route-namespace" type="text" name="namespace" value="{{ .NamespaceFilter }}" placeholder="namespace" />
+            </div>
+            <div class="form-group">
+                <label for="filter-route-type">Type</label>
+                <input id="filter-route-type" type="text" name="type" value="{{ .TypeFilter }}" placeholder="Ingress / HTTPRoute" />
+            </div>
+            <div class="form-group">
+                <label for="filter-route-dns">DNS Name</label>
+                <input id="filter-route-dns" type="text" name="dns" value="{{ .DNSFilter }}" placeholder="example.com" />
+            </div>
+            <div class="form-group">
+                <label for="filter-route-target">Target Service</label>
+                <input id="filter-route-target" type="text" name="target" value="{{ .TargetFilter }}" placeholder="namespace/service" />
+            </div>
+        </div>
+        <div class="filter-actions">
+            <button type="submit" class="button button-accent button-small"><i class="fa-solid fa-filter"></i> Apply Filters</button>
+            <a href="/admin/servers/{{ .Server.ID }}/routes" class="button button-secondary button-small"><i class="fa-solid fa-rotate-left"></i> Clear</a>
+        </div>
+    </form>
+
+    {{ if .Server.Routes }}
+    <div class="table-responsive">
+        <table>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Namespace</th>
+                    <th>Type</th>
+                    <th>DNS Name</th>
+                    <th>Target Service(s)</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{ range .Server.Routes }}
+                <tr>
+                    <td>{{ .Name }}</td>
+                    <td>{{ .Namespace }}</td>
+                    <td><span class="badge">{{ .Type }}</span></td>
+                    <td><code>{{ .DnsName }}</code></td>
+                    <td>
+                        {{ if .TargetServices }}
+                        {{ $targets := splitCSV .TargetServices }}
+                        {{ range $idx, $target := $targets }}{{ if gt $idx 0 }}, {{ end }}<a href="/admin/servers/{{ $.Server.ID }}/services?serviceRef={{ $target | urlquery }}"><code>{{ $target }}</code></a>{{ end }}
+                        {{ else }}
+                        <span class="text-muted">-</span>
+                        {{ end }}
+                    </td>
+                </tr>
+                {{ end }}
+            </tbody>
+        </table>
+    </div>
+    {{ else }}
+    <p class="text-muted">No routes synced yet.</p>
+    {{ end }}
+</div>
+{{ template "admin_foot" . }}

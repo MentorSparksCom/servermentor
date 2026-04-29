@@ -1,0 +1,62 @@
+{{ template "admin_head" . }}
+<div class="page-header">
+    <div>
+        <h2>{{ .Server.Name }}</h2>
+        <p class="text-muted">Provider: {{ .Server.Provider }} | IP: {{ .Server.IP }} | Overlay: {{ .Server.OverlayIP }}</p>
+    </div>
+    <div class="form-actions" style="margin:0; gap:8px;">
+        <a href="/admin/servers/{{ .Server.ID }}/edit" class="button button-secondary">
+            <i class="fa-solid fa-pen"></i> Edit Server
+        </a>
+        <a href="/admin/servers" class="button button-secondary">
+            <i class="fa-solid fa-arrow-left"></i> Back to Servers
+        </a>
+        <button type="button" class="button button-danger open-delete-modal" data-server-id="{{ .Server.ID }}" data-server-name="{{ .Server.Name }}">
+            <i class="fa-solid fa-trash"></i> Delete Server
+        </button>
+    </div>
+</div>
+
+{{ if .DeleteError }}
+<div class="alert alert-error" style="margin-bottom:12px;">
+    <i class="fa-solid fa-triangle-exclamation"></i> {{ .DeleteMessage }}
+</div>
+{{ end }}
+
+{{ template "server_tabs" . }}
+
+<div class="launcher-grid">
+    <a href="/admin/servers/{{ .Server.ID }}/services" class="launcher-card">
+        <div class="launcher-card-icon"><i class="fa-solid fa-gears"></i></div>
+        <h3>Services</h3>
+        <p>{{ len .Server.Services }} discovered</p>
+    </a>
+
+    <a href="/admin/servers/{{ .Server.ID }}/routes" class="launcher-card">
+        <div class="launcher-card-icon"><i class="fa-solid fa-route"></i></div>
+        <h3>Routes</h3>
+        <p>{{ len .Server.Routes }} discovered</p>
+    </a>
+
+    <a href="/admin/servers/{{ .Server.ID }}/deployments" class="launcher-card">
+        <div class="launcher-card-icon"><i class="fa-solid fa-box"></i></div>
+        <h3>Deployments</h3>
+        <p>View all deployment details</p>
+    </a>
+
+    <a href="/admin/servers/{{ .Server.ID }}/dns" class="launcher-card">
+        <div class="launcher-card-icon"><i class="fa-solid fa-globe"></i></div>
+        <h3>DNS</h3>
+        <p>Known route hostnames</p>
+    </a>
+</div>
+
+<div class="card">
+    <h3 class="card-title"><i class="fa-solid fa-tags"></i> Server Metadata</h3>
+    <p><strong>Name:</strong> {{ .Server.Name }}</p>
+    <p><strong>Provider:</strong> {{ .Server.Provider }}</p>
+    <p><strong>IP:</strong> <code>{{ .Server.IP }}</code></p>
+    <p><strong>Overlay IP:</strong> <code>{{ .Server.OverlayIP }}</code></p>
+    <p><strong>Tags:</strong> {{ .Server.Tags }}</p>
+</div>
+{{ template "admin_foot" . }}

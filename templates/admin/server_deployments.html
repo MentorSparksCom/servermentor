@@ -1,0 +1,47 @@
+{{ template "admin_head" . }}
+<div class="page-header">
+    <div>
+        <h2>{{ .Server.Name }} Deployments</h2>
+        <p class="text-muted">Deployments connected to discovered services.</p>
+    </div>
+</div>
+
+{{ template "server_tabs" . }}
+
+<div class="card">
+    <h3 class="card-title"><i class="fa-solid fa-box"></i> Deployments</h3>
+    {{ if or .DeploymentFilter .NamespaceFilter }}
+    <p class="text-muted" style="margin-bottom: 12px;">
+        Filtered by deployment <code>{{ .DeploymentFilter }}</code>
+        {{ if .NamespaceFilter }}in namespace <code>{{ .NamespaceFilter }}</code>{{ end }}.
+        <a href="/admin/servers/{{ .Server.ID }}/deployments">Clear filter</a>
+    </p>
+    {{ end }}
+    {{ if .Deployments }}
+    <div class="table-responsive">
+        <table>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Namespace</th>
+                    <th>Image</th>
+                    <th>Replicas</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{ range .Deployments }}
+                <tr>
+                    <td>{{ .Name }}</td>
+                    <td>{{ .Namespace }}</td>
+                    <td><code>{{ .DockerImage }}</code></td>
+                    <td>{{ .Replicas }}</td>
+                </tr>
+                {{ end }}
+            </tbody>
+        </table>
+    </div>
+    {{ else }}
+    <p class="text-muted">No deployments synced yet.</p>
+    {{ end }}
+</div>
+{{ template "admin_foot" . }}

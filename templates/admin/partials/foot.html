@@ -1,0 +1,70 @@
+{{ define "admin_foot" }}
+    <!-- Delete confirmation modal -->
+    <div id="deleteModal" class="modal-overlay" style="display:none;">
+        <div class="modal">
+            <h3>Confirm Delete</h3>
+            <p>Type the server name <strong id="modalServerName"></strong> to confirm deletion.</p>
+            <form id="deleteForm" method="POST" action="">
+                <input type="hidden" name="server_id" id="modalServerId" value="" />
+                <div class="form-group">
+                    <input type="text" id="confirmInput" name="confirm_name" placeholder="Enter server name exactly" />
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="button button-secondary" id="cancelDelete">Cancel</button>
+                    <button type="submit" class="button button-danger" id="confirmDelete" disabled>Delete Server</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+    (function() {
+        function openDeleteModal(id, name) {
+            var overlay = document.getElementById('deleteModal');
+            document.getElementById('modalServerName').textContent = name;
+            document.getElementById('modalServerId').value = id;
+            var form = document.getElementById('deleteForm');
+            form.action = '/admin/servers/' + id + '/delete';
+            document.getElementById('confirmInput').value = '';
+            document.getElementById('confirmDelete').disabled = true;
+            overlay.style.display = 'flex';
+            setTimeout(function(){ document.getElementById('confirmInput').focus(); }, 50);
+        }
+
+        document.addEventListener('click', function(e) {
+            var btn = e.target.closest && e.target.closest('.open-delete-modal');
+            if (!btn) return;
+            var id = btn.getAttribute('data-server-id');
+            var name = btn.getAttribute('data-server-name');
+            openDeleteModal(id, name);
+        });
+
+        document.getElementById('cancelDelete').addEventListener('click', function() {
+            document.getElementById('deleteModal').style.display = 'none';
+        });
+
+        document.getElementById('confirmInput').addEventListener('input', function(e) {
+            var expected = document.getElementById('modalServerName').textContent.trim();
+            var val = e.target.value.trim();
+            document.getElementById('confirmDelete').disabled = val !== expected;
+        });
+
+        // close if clicking outside modal
+        document.getElementById('deleteModal').addEventListener('click', function(e) {
+            if (e.target === this) this.style.display = 'none';
+        });
+
+        // close on escape
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                var overlay = document.getElementById('deleteModal');
+                if (overlay && overlay.style.display === 'flex') overlay.style.display = 'none';
+            }
+        });
+    })();
+    </script>
+
+    </main>
+</body>
+</html>
+{{ end }}

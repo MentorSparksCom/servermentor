@@ -1,0 +1,4 @@
+.env
+servicetracker.exe
+.agents/
+skills-lock.json

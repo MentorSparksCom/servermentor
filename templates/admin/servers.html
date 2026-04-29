@@ -1,0 +1,104 @@
+{{ template "admin_head" . }}
+<div class="page-header">
+    <div>
+        <h2>Servers</h2>
+        <p class="text-muted">Manage infrastructure nodes and sync Kubernetes state into PostgreSQL.</p>
+    </div>
+    <a href="/admin/servers/new" class="button button-accent">
+        <i class="fa-solid fa-plus"></i> New Server
+    </a>
+</div>
+
+<div class="card">
+    <h3 class="card-title"><i class="fa-solid fa-database"></i> Registered Servers</h3>
+
+    <form action="/admin/servers" method="GET">
+        <div class="filter-grid">
+            <div class="form-group">
+                <label for="filter-name">Name</label>
+                <input id="filter-name" type="text" name="name" value="{{ .NameFilter }}" placeholder="server name" />
+            </div>
+            <div class="form-group">
+                <label for="filter-provider">Provider</label>
+                <input id="filter-provider" type="text" name="provider" value="{{ .ProviderFilter }}" placeholder="provider" />
+            </div>
+            <div class="form-group">
+                <label for="filter-ip">IP</label>
+                <input id="filter-ip" type="text" name="ip" value="{{ .IPFilter }}" placeholder="10.0.0.12" />
+            </div>
+            <div class="form-group">
+                <label for="filter-overlay-ip">Overlay IP</label>
+                <input id="filter-overlay-ip" type="text" name="overlayIp" value="{{ .OverlayIPFilter }}" placeholder="100.64.x.x" />
+            </div>
+            <div class="form-group">
+                <label for="filter-tags">Tags</label>
+                <input id="filter-tags" type="text" name="tags" value="{{ .TagsFilter }}" placeholder="prod,k8s" />
+            </div>
+        </div>
+        <div class="filter-actions">
+            <button type="submit" class="button button-accent button-small"><i class="fa-solid fa-filter"></i> Apply Filters</button>
+            <a href="/admin/servers" class="button button-secondary button-small"><i class="fa-solid fa-rotate-left"></i> Clear</a>
+        </div>
+    </form>
+
+    {{ if .DeletedName }}
+    <div class="alert alert-success" style="margin-bottom:12px;"><i class="fa-solid fa-check"></i> Server "{{ .DeletedName }}" deleted.</div>
+    {{ end }}
+
+    {{ if .Servers }}
+    <div class="table-responsive">
+        <table class="servers-table">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Provider</th>
+                    <th>IP</th>
+                    <th>Overlay IP</th>
+                    <th>Tags</th>
+                    <th>Services</th>
+                    <th>Routes</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{ range .Servers }}
+                <tr>
+                    <td>{{ .Name }}</td>
+                    <td>{{ .Provider }}</td>
+                    <td class="ip-cell"><code class="ip-code">{{ .IP }}</code></td>
+                    <td class="ip-cell"><code class="ip-code">{{ .OverlayIP }}</code></td>
+                    <td class="text-small text-muted">{{ .Tags }}</td>
+                    <td>{{ len .Services }}</td>
+                    <td>{{ len .Routes }}</td>
+                    <td>
+                        <div class="form-actions" style="margin: 0; gap: 8px;">
+                            <a href="/admin/servers/{{ .ID }}" class="button button-secondary button-small">
+                                <i class="fa-solid fa-eye"></i> View
+                            </a>
+                            <a href="/admin/servers/{{ .ID }}/edit" class="button button-secondary button-small">
+                                <i class="fa-solid fa-pen"></i> Edit
+                            </a>
+                            <form action="/admin/servers/{{ .ID }}/sync" method="POST">
+                                <button type="submit" class="button button-secondary button-small">
+                                    <i class="fa-solid fa-rotate"></i> Sync K8s
+                                </button>
+                            </form>
+                            <button type="button" class="button button-danger button-small open-delete-modal" data-server-id="{{ .ID }}" data-server-name="{{ .Name }}">
+                                <i class="fa-solid fa-trash"></i> Delete
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+                {{ end }}
+            </tbody>
+        </table>
+    </div>
+    {{ else }}
+    {{ if or .NameFilter .ProviderFilter .IPFilter .OverlayIPFilter .TagsFilter }}
+    <p class="text-muted">No servers match the current filters.</p>
+    {{ else }}
+    <p class="text-muted">No servers have been added yet.</p>
+    {{ end }}
+    {{ end }}
+</div>
+{{ template "admin_foot" . }}

@@ -1,0 +1,78 @@
+{{ template "admin_head" . }}
+<div class="page-header">
+    <div>
+        <h2>Services</h2>
+        <p class="text-muted">Global service inventory across all servers.</p>
+    </div>
+</div>
+
+<div class="card">
+    <h3 class="card-title"><i class="fa-solid fa-gears"></i> All Services</h3>
+
+    <form action="/admin/services" method="GET">
+        <div class="filter-grid">
+            <div class="form-group">
+                <label for="filter-server">Server</label>
+                <input id="filter-server" type="text" name="server" value="{{ .ServerFilter }}" placeholder="server name" />
+            </div>
+            <div class="form-group">
+                <label for="filter-name">Service Name</label>
+                <input id="filter-name" type="text" name="name" value="{{ .NameFilter }}" placeholder="service name" />
+            </div>
+            <div class="form-group">
+                <label for="filter-namespace">Namespace</label>
+                <input id="filter-namespace" type="text" name="namespace" value="{{ .NamespaceFilter }}" placeholder="namespace" />
+            </div>
+            <div class="form-group">
+                <label for="filter-type">Type</label>
+                <input id="filter-type" type="text" name="type" value="{{ .TypeFilter }}" placeholder="ClusterIP / NodePort" />
+            </div>
+            <div class="form-group">
+                <label for="filter-deployment">Deployment</label>
+                <input id="filter-deployment" type="text" name="deployment" value="{{ .DeploymentFilter }}" placeholder="deployment name" />
+            </div>
+        </div>
+        <div class="filter-actions">
+            <button type="submit" class="button button-accent button-small"><i class="fa-solid fa-filter"></i> Apply Filters</button>
+            <a href="/admin/services" class="button button-secondary button-small"><i class="fa-solid fa-rotate-left"></i> Clear</a>
+        </div>
+    </form>
+
+    {{ if .Services }}
+    <div class="table-responsive">
+        <table class="global-services-table">
+            <thead>
+                <tr>
+                    <th>Server</th>
+                    <th>Name</th>
+                    <th>Namespace</th>
+                    <th>Type</th>
+                    <th>Deployments</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{ range .Services }}
+                <tr>
+                    <td><a href="/admin/servers/{{ .ServerID }}">{{ .ServerName }}</a></td>
+                    <td>{{ .Name }}</td>
+                    <td>{{ .Namespace }}</td>
+                    <td><span class="badge">{{ .Type }}</span></td>
+                    <td>{{ .DeploymentCount }}</td>
+                    <td>
+                        <div class="form-actions" style="margin:0; gap:8px;">
+                            <a href="/admin/servers/{{ .ServerID }}/services?service={{ .Name | urlquery }}&namespace={{ .Namespace | urlquery }}" class="button button-secondary button-small">
+                                <i class="fa-solid fa-eye"></i> Open
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                {{ end }}
+            </tbody>
+        </table>
+    </div>
+    {{ else }}
+    <p class="text-muted">No services match the current filters.</p>
+    {{ end }}
+</div>
+{{ template "admin_foot" . }}

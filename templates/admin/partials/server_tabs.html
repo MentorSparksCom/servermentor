@@ -1,0 +1,21 @@
+{{ define "server_tabs" }}
+<div class="card" style="padding: 14px;">
+    <div class="form-actions" style="margin: 0;">
+        <a href="/admin/servers/{{ .Server.ID }}" class="button {{ if eq .ServerSubNav "overview" }}button-accent{{ else }}button-secondary{{ end }} button-small">
+            <i class="fa-solid fa-circle-info"></i> Overview
+        </a>
+        <a href="/admin/servers/{{ .Server.ID }}/services" class="button {{ if eq .ServerSubNav "services" }}button-accent{{ else }}button-secondary{{ end }} button-small">
+            <i class="fa-solid fa-gears"></i> Services
+        </a>
+        <a href="/admin/servers/{{ .Server.ID }}/deployments" class="button {{ if eq .ServerSubNav "deployments" }}button-accent{{ else }}button-secondary{{ end }} button-small">
+            <i class="fa-solid fa-box"></i> Deployments
+        </a>
+        <a href="/admin/servers/{{ .Server.ID }}/routes" class="button {{ if eq .ServerSubNav "routes" }}button-accent{{ else }}button-secondary{{ end }} button-small">
+            <i class="fa-solid fa-route"></i> Routes
+        </a>
+        <a href="/admin/servers/{{ .Server.ID }}/dns" class="button {{ if eq .ServerSubNav "dns" }}button-accent{{ else }}button-secondary{{ end }} button-small">
+            <i class="fa-solid fa-globe"></i> DNS
+        </a>
+    </div>
+</div>
+{{ end }}
