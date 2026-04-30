@@ -8,6 +8,8 @@ type Server struct {
 	Provider   string
 	IP         string
 	OverlayIP  string
+	RAM        string
+	DiskSize   string
 	Tags       string // Comma separated, or use a separate table
 	KubeConfig string `gorm:"type:text"` // kluster login yaml
 	Services   []Service

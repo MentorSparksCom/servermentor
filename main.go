@@ -356,6 +356,8 @@ func createServer(c *gin.Context) {
 	provider := c.PostForm("provider")
 	ip := c.PostForm("ip")
 	overlayIP := c.PostForm("overlayIp")
+	ram := c.PostForm("ram")
+	diskSize := c.PostForm("diskSize")
 	tags := c.PostForm("tags")
 	kubeConfig := c.PostForm("kubeConfig")
 
@@ -364,6 +366,8 @@ func createServer(c *gin.Context) {
 		Provider:   provider,
 		IP:         ip,
 		OverlayIP:  overlayIP,
+		RAM:        ram,
+		DiskSize:   diskSize,
 		Tags:       tags,
 		KubeConfig: kubeConfig,
 	})
@@ -427,6 +431,8 @@ func updateServer(c *gin.Context) {
 	server.Provider = c.PostForm("provider")
 	server.IP = c.PostForm("ip")
 	server.OverlayIP = c.PostForm("overlayIp")
+	server.RAM = c.PostForm("ram")
+	server.DiskSize = c.PostForm("diskSize")
 	server.Tags = c.PostForm("tags")
 	server.KubeConfig = c.PostForm("kubeConfig")
 

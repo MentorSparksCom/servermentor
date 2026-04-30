@@ -36,6 +36,17 @@
             </div>
         </div>
 
+        <div class="form-grid-2">
+            <div class="form-group">
+                <label for="ram">RAM</label>
+                <input type="text" id="ram" name="ram" value="{{ .Server.RAM }}">
+            </div>
+            <div class="form-group">
+                <label for="diskSize">Disk Size</label>
+                <input type="text" id="diskSize" name="diskSize" value="{{ .Server.DiskSize }}">
+            </div>
+        </div>
+
         <div class="form-group">
             <label for="tags">Tags</label>
             <input type="text" id="tags" name="tags" value="{{ .Server.Tags }}">
